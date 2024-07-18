@@ -1,0 +1,49 @@
+import { Server } from "socket.io";
+
+const io = new Server({
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
+
+let onLineUser = [];
+
+const addNewUser = (username, socketId) => {
+  if (!onLineUser.some((user) => user.username === username)) {
+    onLineUser.push({ username, socketId });
+    console.log(`Added new user: ${username}`);
+  }
+};
+
+const removeUser = (socketId) => {
+  onLineUser = onLineUser.filter((user) => user.socketId !== socketId);
+};
+
+const getUser = (username) => {
+  return onLineUser.find((user) => user.username === username);
+};
+io.on("connection", (socket) => {
+  socket.on("username", (username) => {
+    addNewUser(username, socket.id);
+    console.log(`User ${username} connected with socket ID ${socket.id}`);
+  });
+
+  socket.on("sendNotification", ({ senderName, receiverName, type }) => {
+    const receiver = getUser(receiverName);
+    if (receiver && receiver.socketId) {
+      io.to(receiver.socketId).emit("getNotification", {
+        senderName,
+        type,
+      });
+    } else {
+      console.error(`Receiver ${receiverName} not found or missing socketId.`);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    removeUser(socket.id);
+  });
+});
+
+io.listen(5000);

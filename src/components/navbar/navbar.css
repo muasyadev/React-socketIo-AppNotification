@@ -1,0 +1,38 @@
+.navbar {
+  height: 50px;
+  background-color: rgb(11, 173, 119);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: white;
+}
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+.icons {
+  display: flex;
+  align-items: center;
+}
+.icon {
+  margin-left: 20px;
+  cursor: pointer;
+  position: relative;
+}
+.iconImg {
+  widows: 20px;
+  height: 20px;
+}
+.counter {
+  width: 15px;
+  height: 15px;
+  background-color: rgb(248, 44, 44);
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 3px;
+  right: -7px;
+}

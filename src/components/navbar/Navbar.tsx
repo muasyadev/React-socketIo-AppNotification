@@ -13,10 +13,13 @@ interface NavbarProps {
 interface NotificationData {
   id: string;
   message: string;
+  senderName: string;
+  type: number;
 }
 
 const Navbar = ({ socket }: NavbarProps) => {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -31,23 +34,53 @@ const Navbar = ({ socket }: NavbarProps) => {
 
   console.log(notifications);
 
+  const displayNotification = ({ senderName, type }: NotificationData) => {
+    let action;
+    if (type === 1) {
+      action = "Liked";
+    } else if (type === 2) {
+      action = "commented";
+    } else {
+      action = "shared";
+    }
+
+    return (
+      <span className="notification">{`${senderName} ${action} your post`}</span>
+    );
+  };
+  const handleRead = () => {
+    setNotifications([]);
+    setOpen(false);
+  };
   return (
     <div className="navbar">
       <span className="logo">Logo</span>
       <div className="icons">
-        <div className="icon">
+        <div className="icon" onClick={() => setOpen(!open)}>
           <img src={Notification} className="iconImg" alt="" />
-          <div className="counter">{notifications.length}</div>
+          {notifications.length > 0 && (
+            <div className="counter">{notifications.length}</div>
+          )}
         </div>
-        <div className="icon">
+        <div className="icon" onClick={() => setOpen(!open)}>
           <img src={Message} className="iconImg" alt="" />
-          <div className="counter">2</div> {/* Example counter */}
         </div>
-        <div className="icon">
+        <div className="icon" onClick={() => setOpen(!open)}>
           <img src={Settings} className="iconImg" alt="" />
-          <div className="counter">2</div> {/* Example counter */}
         </div>
       </div>
+      {open && (
+        <div className="notifications">
+          {notifications.map((notification, index) => (
+            <>
+              <div key={index}>{displayNotification(notification)}</div>
+              <button className="nButton" onClick={handleRead}>
+                Mark as read
+              </button>
+            </>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
